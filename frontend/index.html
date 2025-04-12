@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Agriculture Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div class="header">
+        <div class="container-title">Smart Agriculture Dashboard</div>
+        <button id="btn-update-info">Update Info</button>
+    </div>
+    <div class="container">
+        <div class="left-panel">
+            <div class="date-time">
+                <div class="day">Sunday</div>
+                <div class="time">09:45</div>
+                <div class="date">14 Feb 2025</div>
+            </div>
+            <div class="weather">
+                <div class="weather-type">Mostly Sunny,</div>
+                <div class="temp">25 ℃</div>
+                <div class="wind">Wind: 8kph</div>
+            </div>
+            <div class="motor-section">
+                <div>Motor Control<br>Switch</div>
+                <div class="motor-container">
+                    <button class="motor-switch">ON</button>
+                </div>
+            </div>
+        </div>
+        <div class="right-panel">
+            <div class="graphs-container">
+                <div id="graph-display"></div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

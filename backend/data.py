@@ -5,8 +5,8 @@ import numpy as np
 
 def run_aws_find():
     # ✅ Step 1: Add your credentials and region
-    # aws_access_key_id = 'your_aws_access_key_id'
-    # aws_secret_access_key = 'your_aws_secret_access_key'
+    aws_access_key_id = 'your_aws_access_key_id'
+    aws_secret_access_key = 'your_aws_secret_access_key'
     region_name = 'ap-southeast-1'  # or your actual region
 
     # ✅ Step 2: Connect to DynamoDB and get table

@@ -24,7 +24,7 @@ def get_sensor_data():
             "humidity": new_data[:,1].tolist(),
             "temperature": new_data[:,0].tolist(),
             "rain": new_data[:,2].tolist(),
-            "soil_moisture": new_data[:,4].tolist(),
+            "soil_moisture": new_data[:,3].tolist(),
             "day_night": new_data[:,4].tolist()
         }
         items = [

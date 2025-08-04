@@ -3,24 +3,30 @@ from flask_cors import CORS
 import plotly.graph_objects as go
 import logging
 from datetime import datetime
+from data import run_aws_find
 
+new_data = run_aws_find()
+# print(new_data[1])
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-CORS(app, resources={r"/graphs": {"origins": "http://127.0.0.1:5500"}})
+# CORS(app, resources={r"/graphs": {"origins": "http://127.0.0.1:5500"}})
+CORS(app)  # or: CORS(app, resources={r"/*": {"origins": "*"}})
+
+
 
 def get_sensor_data():
     try:
         sample_data = {
-            "timestamps": ["2025-04-10T09:00:00", "2025-04-10T09:15:00", "2025-04-10T09:30:00", "2025-04-10T09:45:00", "2025-04-10T10:00:00"],
-            "humidity": [30, 40, 50, 45, 35],
-            "temperature": [20, 22, 25, 23, 21],
-            "rain": [10, 20, 15, 25, 10],
-            "soil_moisture": [40, 50, 60, 55, 45]
+            "timestamps": new_data[:,5].tolist(),
+            "humidity": new_data[:,1].tolist(),
+            "temperature": new_data[:,0].tolist(),
+            "rain": new_data[:,2].tolist(),
+            "soil_moisture": new_data[:,4].tolist(),
+            "day_night": new_data[:,4].tolist()
         }
-    
         items = [
             {
                 "timestamp": {"S": timestamp},
@@ -55,22 +61,45 @@ def generate_plotly_config(x_data, y_data, title):
         if not x_data or not y_data:
             raise ValueError("Empty data provided for graph generation")
         
-        fig = go.Figure(data=go.Scatter(x=x_data, y=y_data, mode='lines+markers', line=dict(width=2), marker=dict(size=16)))
+        # fig = go.Figure(data=go.Scatter(x=x_data, y=y_data, mode='lines+markers', line=dict(width=2,), marker=dict(size=16)))
+        
+        
+        fig = go.Figure(data=go.Scatter(
+            x=x_data,
+            y=y_data,
+            mode='lines+markers',
+            line=dict(width=2, color="#00a000"),
+            marker=dict(size=8, color="#003000")
+        ))
+
         fig.update_layout(
-            title=title,
-            xaxis_title="Timestamp",
-            yaxis_title=title.split()[0],
+            # xaxis_title="Timestamp",
+            # yaxis_title=title.split()[0],
             font=dict(size=10),
-            title_font_size=18,
-            # width=80,  # Increased width
-            # height=30,  # Reduced height
-            margin=dict(l=40, r=10, t=40, b=10),
-            # padding=dict(l=10, r=10, t=30, b=90),
-            plot_bgcolor='white',
-            paper_bgcolor='white',
-            xaxis=dict(gridcolor='lightgray', gridwidth=1),
-            yaxis=dict(gridcolor='lightgray', gridwidth=1)
+            margin=dict(l=30, r=10, t=10, b=30),
+            plot_bgcolor='#efffdf',
+            paper_bgcolor='#effddf',
+            xaxis=dict(gridcolor='lightgray'),
+            yaxis=dict(gridcolor='lightgray')
         )
+
+        
+        
+        # fig.update_layout(
+        #     # title=title,
+        #     xaxis_title="Timestamp",
+        #     yaxis_title=title.split()[0],
+        #     font=dict(size=10),
+        #     title_font_size=18,
+        #     # width=80,  # Increased width
+        #     # height=30,  # Reduced height
+        #     margin=dict(l=40, r=10, t=40, b=10),
+        #     # padding=dict(l=10, r=10, t=30, b=90),
+        #     plot_bgcolor='#efffdf',
+        #     paper_bgcolor='#efffdf',
+        #     xaxis=dict(gridcolor='lightgray', gridwidth=1),
+        #     yaxis=dict(gridcolor='lightgray', gridwidth=1)
+        # )
         config = fig.to_json()
         logger.info(f"Generated {title} graph configuration successfully")
         return config

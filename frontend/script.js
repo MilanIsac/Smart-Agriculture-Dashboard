@@ -1,135 +1,91 @@
-const apiKey = "9391f01f4329c46e74168bcf40180187";
-const city = "Ahmedabad";
+const API_KEY = "8ba4c1fd40d3e08906cbe2e8fb570cd9";
+const CITY = "Mumbai"; 
+
+function updateTimeDate() {
+    const now = new Date();
+    const options = { weekday: 'long' };
+    const dayName = now.toLocaleDateString('en-US', options);
+    const dateStr = now.toLocaleDateString('en-GB'); // format: DD/MM/YYYY
+    // const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const timeStr = now.toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit' });
+
+    // document.getElementById("date").innerHTML = `${dayName}`;
+    // document.querySelectorAll("#date")[1].innerHTML = dateStr;
+    document.getElementById("time").innerHTML = timeStr;
+
+    document.getElementById("day").innerHTML = `${dayName}`;
+    document.getElementById("full-date").innerHTML = dateStr;
+    // document.getElementById("weather-condition").innerHTML = `🌤️ ${condition}, ${temp}°C`;
+    // document.getElementById("wind-speed").innerHTML = `🌬️ Wind: ${windSpeed} m/s`;
+    // document.getElementById("city").innerHTML = `${CITY}`;
+}
 
 document.addEventListener("DOMContentLoaded", () => {
-    const motorSwitch = document.querySelector(".motor-switch");
+    const motorButton = document.getElementById("motor-btn");
 
-    motorSwitch.addEventListener("click", () => {
-        const isOn = motorSwitch.textContent === "ON";
-
+    motorButton.addEventListener("click", () => {
+        const isOn = motorButton.textContent.trim() === "ON";
         if (isOn) {
-            motorSwitch.textContent = "OFF";
-            motorSwitch.style.backgroundColor = "red";
+            motorButton.textContent = "OFF";
+            motorButton.style.backgroundColor = "red";
         } else {
-            motorSwitch.textContent = "ON";
-            motorSwitch.style.backgroundColor = "green";
+            motorButton.textContent = "ON";
+            motorButton.style.backgroundColor = "green";
         }
     });
 });
 
-function updateDateTime() {
-    const date = new Date();
 
-    const currDay = date.toLocaleDateString("en-US", { weekday: "long" });
-    const currTime = date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
-    const currDate = date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
-
-    document.querySelector(".date").textContent = currDate;
-    document.querySelector(".day").textContent = currDay;
-    document.querySelector(".time").textContent = currTime;
-}
-updateDateTime();
-setInterval(updateDateTime, 1000);
-
-// function get_weather_data(){
-//     fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`)
-//     .then(response => response.json())
-//     .then(data => {
-//         const weather = data.weather[0].description;
-//         const temperature = data.main.temp;
-//         const wind_speed = data.wind.speed;
-
-//         document.querySelector(".weather-type").textContent = `Weather: ${weather}`;
-//         document.querySelector(".temp").textContent = `Temperature: ${temperature}°C`;
-//         document.querySelector(".wind").textContent = `Wind Speed: ${wind_speed} m/s`;
-//     })
-//     .catch(error => {
-//         console.error("Error fetching weather data:", error);
-//     });
-// }
-
-// setInterval(get_weather_data, 60000);
-// get_weather_data();
-
-function loadPlotly() {
-    return new Promise((resolve, reject) => {
-        if (window.Plotly) {
-            resolve();
-        } else {
-            const script = document.createElement("script");
-            script.src = "https://cdn.plot.ly/plotly-latest.min.js";
-            script.onload = resolve;
-            script.onerror = () => reject(new Error("Failed to load Plotly from CDN"));
-            document.head.appendChild(script);
-        }
-    });
-}
-
-document.getElementById("btn-update-info").addEventListener("click", () => {
-    loadPlotly()
-        .then(() => {
-            return fetch("http://127.0.0.1:8000/graphs", {
-                mode: 'cors'
-            });
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText}`);
-            }
-            return response.text().then(text => {
-                console.log("Raw response:", text.substring(0, 500) + (text.length > 500 ? "..." : ""));
-                try {
-                    return JSON.parse(text);
-                } catch (e) {
-                    throw new Error(`Invalid JSON: ${e.message} - Received: ${text.substring(0, 100)}...`);
-                }
-            });
-        })
+function fetchWeather() {
+    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${CITY}&appid=${API_KEY}&units=metric`)
+        .then(response => response.json())
         .then(data => {
-            console.log("JSON received:", JSON.stringify(data, null, 2).substring(0, 500) + (JSON.stringify(data).length > 500 ? "..." : ""));
-            const graphDisplay = document.getElementById("graph-display");
-            graphDisplay.innerHTML = ""; // Clear previous content
-            if (Array.isArray(data) && data.length > 0) {
-                if (window.Plotly) {
-                    data.forEach((config, index) => {
-                        const div = document.createElement("div");
-                        div.className = "plotly-graph-div";
-                        graphDisplay.appendChild(div);
-                        try {
-                            const parsedConfig = JSON.parse(config);
-                            // Update layout to match CSS dimensions
-                            const containerWidth = div.clientWidth;
-                            parsedConfig.layout.width = containerWidth;
-                            parsedConfig.layout.height = 180;
-                            parsedConfig.layout,margin = {
-                                t: 40,
-                                b: 40,
-                                l: 40,
-                                r: 40
-                            }
-                            Plotly.newPlot(div, parsedConfig.data, parsedConfig.layout);
-                            console.log(`Plotly graph rendered for index ${index}`);
-                        } catch (e) {
-                            console.error(`Error parsing config for index ${index}:`, e);
-                            div.innerHTML = `<p>Error rendering graph: ${e.message}</p>`;
-                        }
-                    });
-                } else {
-                    console.warn("Plotly still not loaded after dynamic load");
-                    graphDisplay.innerHTML = `<h1>Plotly failed to load dynamically. Check network or CDN.</h1>`;
-                }
-            } else if (data.error) {
-                graphDisplay.innerHTML = `<h1>${data.error}</h1>`;
-            } else {
-                graphDisplay.innerHTML = `<h1>Invalid data format</h1>`;
-            }
+            const temp = data.main.temp;
+            const windSpeed = data.wind.speed;
+            const condition = data.weather[0].description;
+            const location = data.name;
+
+document.getElementById("weather-condition").innerHTML = `🌤️ ${condition}, ${temp}°C`;
+document.getElementById("wind-speed").innerHTML = `🌬️ Wind: ${windSpeed} m/s`;
+
+
+            // document.getElementById("weather").innerHTML = `🌤️ ${condition}, ${temp}°C`;
+            // document.querySelectorAll("#weather")[1].innerHTML = `🌬️ Wind: ${windSpeed} m/s`;
         })
         .catch(error => {
-            console.error("Fetch or load error:", error);
-            fetch("http://127.0.0.1:8000/graphs")
-                .then(resp => resp.text())
-                .then(text => console.log("Debug raw response:", text.substring(0, 500) + (text.length > 500 ? "..." : "")))
-                .catch(debugErr => console.error("Debug fetch error:", debugErr));
-            document.getElementById("graph-display").innerHTML = `<h1>Error loading graphs: ${error.message}</h1>`;
+            console.error("Weather fetch error:", error);
         });
+}
+
+function refreshDashboard() {
+    updateTimeDate();
+    fetchWeather();
+}
+
+function renderGraphs() {
+    fetch('http://127.0.0.1:8000/graphs')
+        .then(res => res.json())
+        .then(graphs => {
+            const ids = ["humidity-graph", "temperature-graph", "rain-graph", "soil-graph"];
+            graphs.forEach((graphJSON, i) => {
+                const parsed = JSON.parse(graphJSON);
+                Plotly.newPlot(ids[i], parsed.data, parsed.layout, {responsive: true});
+            });
+        })
+        .catch(err => console.error("Graph load error:", err));
+}
+
+document.getElementById("refresh-btn").addEventListener("click", () => {
+    refreshDashboard();  // update weather/time
+    renderGraphs();      // re-fetch graphs from Flask
 });
+
+// Auto-refresh every 10 minutes
+setInterval(refreshDashboard, 600000);
+
+// Initial call on page load
+refreshDashboard();
+
+// Initial call on page load
+// refreshDashboard();
+renderGraphs();  // ✅ Add this

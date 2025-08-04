@@ -4,39 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Agriculture Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
 </head>
 <body>
-    <div class="header">
-        <div class="container-title">Smart Agriculture Dashboard</div>
-        <button id="btn-update-info">Update Info</button>
+
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <h1>   Smart Agriculture Dashboard   </h1>
+        <img id="refresh-btn" src="refresh-page-option.png" alt="Refresh">
     </div>
-    <div class="container">
-        <div class="left-panel">
-            <div class="date-time">
-                <div class="day">Sunday</div>
-                <div class="time">09:45</div>
-                <div class="date">14 Feb 2025</div>
+
+    <!-- Main Dashboard Container -->
+    <div class="dashboard-container">
+
+        <!-- Left Section -->
+        <div class="left-section">
+            <!-- Time and Weather -->
+            <div class="time-weather">
+                <h2 id="day">Sunday</h2>
+                <div id="time">09:45</div>
+                <p id="full-date">14 Feb 2025</p>
+                <p id="weather-condition">☀️ Mostly Sunny, 25°</p>
+                <p id="wind-speed">🌬️ Wind: 8kph</p>
+                <p id="city">surat</p>
+
             </div>
-            <div class="weather">
-                <div class="weather-type">Mostly Sunny,</div>
-                <div class="temp">25 ℃</div>
-                <div class="wind">Wind: 8kph</div>
-            </div>
-            <div class="motor-section">
-                <div>Motor Control<br>Switch</div>
-                <div class="motor-container">
-                    <button class="motor-switch">ON</button>
+
+            <!-- Motor Control Switch -->
+            <div class="motor-control">
+                <!-- <p>Motor Control Switch</p> -->
+                <div class ="motor-box">   
+                    <div class = "left-motor-section">
+                        <img id="motor-img" src="water-pump.png" alt="graph">
+                    </div>
+                    <div class = "right-motor-section">
+                        <button id="motor-btn" class="off">
+                            ON
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="right-panel">
-            <div class="graphs-container">
-                <div id="graph-display"></div>
+
+        <!-- Right Section (Sensor Data) -->
+        <div class="right-section">
+            <div class="sensor-grid">
+                <div class="sensor-card">
+                    <h3 class="sensor-text">Humidity %</h3>
+                    <div class="chart-box" id = "humidity-graph">
+                    </div>
+                </div>
+                <div class="sensor-card">
+                    <h3 class="sensor-text">Temperature °C</h3>
+                    <div class="chart-box" id = "temperature-graph">
+                    </div>  
+                </div>
+                <div class="sensor-card">
+                    <h3 class="sensor-text">Rain %</h3>
+                    <div class="chart-box" id = "rain-graph">
+                    </div>
+                </div>
+                <div class="sensor-card">
+                    <h3 class="sensor-text">Soil Moisture %</h3>
+                    <div class="chart-box" id = "soil-graph">
+                    </div>
+                </div>
             </div>
         </div>
+
     </div>
+
     <script src="script.js"></script>
+
 </body>
 </html>

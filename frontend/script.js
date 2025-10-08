@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-
+const CITY = "Mumbai";
 function fetchWeather() {
     fetch(`http://127.0.0.1:8000/weather?city=${CITY}`)
         .then(response => response.json())

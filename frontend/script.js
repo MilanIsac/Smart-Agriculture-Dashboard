@@ -1,5 +1,3 @@
-const API_KEY = "8ba4c1fd40d3e08906cbe2e8fb570cd9";
-const CITY = "Mumbai"; 
 
 function updateTimeDate() {
     const now = new Date();
@@ -37,20 +35,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 function fetchWeather() {
-    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${CITY}&appid=${API_KEY}&units=metric`)
+    fetch(`http://127.0.0.1:8000/weather?city=${CITY}`)
         .then(response => response.json())
         .then(data => {
+            if (data.error) {
+                console.error("Server error:", data.error);
+                return;
+            }
+
             const temp = data.main.temp;
             const windSpeed = data.wind.speed;
             const condition = data.weather[0].description;
-            const location = data.name;
 
-document.getElementById("weather-condition").innerHTML = `🌤️ ${condition}, ${temp}°C`;
-document.getElementById("wind-speed").innerHTML = `🌬️ Wind: ${windSpeed} m/s`;
-
-
-            // document.getElementById("weather").innerHTML = `🌤️ ${condition}, ${temp}°C`;
-            // document.querySelectorAll("#weather")[1].innerHTML = `🌬️ Wind: ${windSpeed} m/s`;
+            document.getElementById("weather-condition").innerHTML = `🌤️ ${condition}, ${temp}°C`;
+            document.getElementById("wind-speed").innerHTML = `🌬️ Wind: ${windSpeed} m/s`;
         })
         .catch(error => {
             console.error("Weather fetch error:", error);
@@ -88,4 +86,4 @@ refreshDashboard();
 
 // Initial call on page load
 // refreshDashboard();
-renderGraphs();  // ✅ Add this
+renderGraphs();

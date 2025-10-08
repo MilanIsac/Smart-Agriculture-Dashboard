@@ -4,6 +4,12 @@ import plotly.graph_objects as go
 import logging
 from datetime import datetime
 from data import run_aws_find
+from flask import request
+import requests
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 new_data = run_aws_find()
 # print(new_data[1])
@@ -130,6 +136,25 @@ def get_graphs():
     
     logger.info("Returning graph configurations")
     return jsonify(graphs)
+
+
+
+@app.route('/weather', methods=['GET'])
+def get_weather():
+    city = request.args.get('city', 'Mumbai')
+    api_key = os.getenv('OPENWEATHER_API_KEY')
+
+    if not api_key:
+        return jsonify({"error": "Missing API key"}), 500
+
+    url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
+
+    try:
+        response = requests.get(url)
+        data = response.json()
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)
